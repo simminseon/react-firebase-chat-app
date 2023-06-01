@@ -1,10 +1,10 @@
-import { combineReducers } from 'redux';
-import counter from './counter';
-import todos from './todos';
+import { combineReducers } from 'redux'; 
+// import user from "./user_reducer";
+// import chatRoom from "./chatRoom_reducer";
 
 const rootReducer = combineReducers({
-  counter,
-  todos,
+  // user,
+  // chatRoom
 });
 
 export default rootReducer;
