@@ -12,7 +12,10 @@ import firebase from './firebase';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const createStoreWithMiddleware = applyMiddleware(promiseMiddleware, ReduxThunk)(createStore);
+const createStoreWithMiddleware = applyMiddleware(
+  promiseMiddleware,
+  ReduxThunk
+)(createStore);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -23,7 +26,8 @@ const render = () =>
         <Provider
           store={createStoreWithMiddleware(
             rootReducer,
-            window.__REDUX_DEVTOOLS_EXTENTION__ && window.__REDUX_DEVTOOLS_EXTENTION__()
+            window.__REDUX_DEVTOOLS_EXTENSION__ &&
+              window.__REDUX_DEVTOOLS_EXTENSION__()
           )}
         >
           <App />
