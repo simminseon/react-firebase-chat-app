@@ -8,7 +8,7 @@ import { createStore, applyMiddleware } from 'redux';
 import promiseMiddleware from 'redux-promise';
 import ReduxThunk from 'redux-thunk';
 import rootReducer from './redux/reducers';
-import app from './firebase';
+import firebase from './firebase';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 

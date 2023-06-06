@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
+import md5 from 'md5';
+import { getDatabase, ref, set } from 'firebase/database';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 function RegisterPage() {
   const {
@@ -9,9 +12,38 @@ function RegisterPage() {
     watch,
     formState: { errors },
   } = useForm();
-  const password = useRef(null);
+  const [errorFromSubmit, setErrorFromSubmit] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const onSubmit = (data) => console.log(data);
+  const password = useRef();
+  password.current = watch('password');
+
+  const onSubmit = async (data) => {
+    try {
+      setLoading(true);
+
+      const auth = getAuth();
+      let createdUser = await createUserWithEmailAndPassword(auth, data.email, data.password);
+
+      await updateProfile(createdUser.user, {
+        displayName: data.name,
+        photoURL: `http://gravatar.com/avatar/${md5(createdUser.user.email)}?d=identicon`,
+      });
+
+      //Firebase 데이터베이스에 저장해주기
+      set(ref(getDatabase(), `users/${createdUser.user.uid}`), {
+        name: createdUser.user.displayName,
+        image: createdUser.user.photoURL,
+      });
+
+      console.log(createdUser);
+
+      setLoading(false);
+    } catch (error) {
+      setErrorFromSubmit(error.message);
+      setLoading(false);
+    }
+  };
   return (
     <div className="auth-wrapper">
       <div style={{ textAlign: 'center' }}>
@@ -36,12 +68,11 @@ function RegisterPage() {
           name="password"
           type="password"
           {...register('password', { required: true, minLength: 6 })}
-          ref={password}
         />
-        {errors.password && errors.name.type === 'required' && (
+        {errors.password && errors.password.type === 'required' && (
           <p>This password field is required</p>
         )}
-        {errors.password && errors.name.type === 'minLength' && (
+        {errors.password && errors.password.type === 'minLength' && (
           <p>Password must have at 6 characters</p>
         )}
 
@@ -54,14 +85,15 @@ function RegisterPage() {
             validate: (value) => value === password.current,
           })}
         />
-        {errors.password_confirm && errors.name.type === 'required' && (
+        {errors.password_confirm && errors.password_confirm.type === 'required' && (
           <p>This password confirm field is required</p>
         )}
-        {errors.password_confirm && errors.name.type === 'validate' && (
+        {errors.password_confirm && errors.password_confirm.type === 'validate' && (
           <p>The passwords do not match</p>
         )}
 
-        <input type="submit" />
+        {errorFromSubmit && <p>{errorFromSubmit}</p>}
+        <input type="submit" disabled={loading} />
         <Link to="login" style={{ color: 'gray', textDecoration: 'none' }}>
           이미 아이디가 있다면...
         </Link>
