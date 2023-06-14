@@ -3,17 +3,20 @@ import { getAuth } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../../redux/actions/user_action';
 
-function ChatPage() {
-  const auth = getAuth();
-  const navigate = useNavigate();
+import SidePanel from './SidePanel/SidePanel';
+import MainPanel from './MainPanel/MainPanel';
 
-  const onLogOutClick = () => {
-    auth.signOut();
-    navigate('/');
-  };
+function ChatPage() {
   return (
     <div>
-      <button onClick={onLogOutClick}>Log Out</button>
+      <div style={{ display: 'flex' }}>
+        <div style={{ width: '300px' }}>
+          <SidePanel />
+        </div>
+        <div style={{ width: '100%' }}>
+          <MainPanel />
+        </div>
+      </div>
     </div>
   );
 }
